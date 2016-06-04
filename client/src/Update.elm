@@ -3,6 +3,7 @@ module Update exposing (..)
 import Hop exposing (makeUrl)
 import Hop.Types exposing (Location)
 import Navigation
+import Material
 
 import Route exposing (routerConfig)
 import Model exposing (..)
@@ -46,6 +47,9 @@ update msg model =
             |> Navigation.modifyUrl
       in
         (model, command)
+
+    Mdl msg' ->
+      Material.update Mdl msg' model
 
 updateMetricHelper : Int -> Metric.Msg -> IndexedMetric -> IndexedMetric
 updateMetricHelper targetId msg {id, model} =

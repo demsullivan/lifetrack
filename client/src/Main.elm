@@ -1,6 +1,7 @@
 module Main exposing (..)
 import Navigation
 import Hop.Types exposing (Location)
+import Material
 
 import View
 import Update
@@ -13,6 +14,7 @@ init ( route, location ) =
     , metricUid = 0
     , route = route
     , location = location
+    , mdl = Material.model
     }
   , Cmd.none
   )
@@ -21,7 +23,7 @@ main : Program Never
 main =
   Navigation.program Route.urlParser
     { init = init
-    , view = View.view
+    , view = View.layoutView
     , update = Update.update
     , urlUpdate = Update.urlUpdate
     , subscriptions = Update.subscriptions
