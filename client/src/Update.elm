@@ -1,12 +1,18 @@
 module Update exposing (..)
 
+import Hop exposing (makeUrl)
+import Hop.Types exposing (Location)
+import Navigation
+
+import Route exposing (routerConfig)
 import Model exposing (..)
 import Components.Metric as Metric
 
-subscriptions =
+subscriptions : Model -> Sub Model.Msg
+subscriptions model =
   Sub.none
 
-urlUpdate : ( Route, Hop.Types.Location ) -> Model -> (Model, Cmd Msg)
+urlUpdate : ( Route.Route, Hop.Types.Location ) -> Model -> (Model, Cmd Msg)
 urlUpdate ( route, location ) model =
   ({ model | route = route, location = location}, Cmd.none)
 
@@ -33,8 +39,14 @@ update msg model =
       , Cmd.none
       )
 
-    NavigateTo
+    NavigateTo path ->
+      let
+        command =
+          makeUrl routerConfig path
+            |> Navigation.modifyUrl
+      in
+        (model, command)
 
-updateMetricHelper : Int -> Msg -> IndexedMetric -> IndexedMetric
+updateMetricHelper : Int -> Metric.Msg -> IndexedMetric -> IndexedMetric
 updateMetricHelper targetId msg {id, model} =
   IndexedMetric id (if targetId == id then Metric.update msg model else model)

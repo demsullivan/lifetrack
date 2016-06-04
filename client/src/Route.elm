@@ -1,7 +1,7 @@
 module Route exposing (..)
 
 import Navigation
-import Hop exposing (makeUrl, makeUrlFromLocation, matchUrl, setQuery)
+import Hop exposing (matchUrl)
 import Hop.Types exposing (Config, Query, Location, PathMatcher, Router)
 import Hop.Matchers exposing (..)
 
@@ -20,7 +20,7 @@ matchers =
 
 routerConfig : Config Route
 routerConfig =
-  { hash = False
+  { hash = True
   , basePath = ""
   , matchers = matchers
   , notFound = NotFoundRoute

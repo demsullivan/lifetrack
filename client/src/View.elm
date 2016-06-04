@@ -5,9 +5,11 @@ import Html.Events exposing (onClick)
 import Html.App as App
 
 import Model exposing (..)
+import Route exposing (..)
+
 import Components.Metric as Metric
 
-view : Model -> Html Msg
+view : Model.Model -> Html Msg
 view model =
   let
     remove =
@@ -31,8 +33,33 @@ view model =
         ] ++ List.map metricRow model.metrics)
 
   in
-    div [] ([remove, addString, addNumber] ++ metricEditList ++ [metricNameList])
+    div []
+      [ div [] [ mainMenu model ]
+      , div [] ([remove, addString, addNumber] ++ metricEditList ++ [metricNameList])
+      , div [] [ pageView model ]
+      ]
 
+mainMenu : Model.Model -> Html Msg
+mainMenu model =
+  div []
+    [ button [ onClick ( NavigateTo "" ) ] [ text "Home" ]
+    , button [ onClick ( NavigateTo "metrics" ) ] [ text "Metrics" ]
+    , button [ onClick ( NavigateTo "missing" ) ] [ text "Invalid" ]
+    ]
+    
+pageView : Model.Model -> Html Msg
+pageView model =
+  case model.route of
+    IndexRoute ->
+      text "You are on the index page."
+
+    MetricsRoute ->
+      text "You are on the metrics page."
+
+    NotFoundRoute ->
+      text "Oops! Page not found."
+
+metricRow : IndexedMetric -> Html Msg
 metricRow model =
   tr []
     [ td [] [ text model.model.name ]
