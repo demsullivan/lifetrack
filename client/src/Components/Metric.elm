@@ -1,51 +1,81 @@
-module Components.Metric exposing (Model, Msg, MetricType (MString, MRating, MNumber, MBoolean), update, editView, init, typeToString)
-import Html exposing (..)
+module Components.Metric exposing (Metric, Msg, MetricType (MString, MRating, MNumber, MBoolean), newMetric, update, view, editView)
+-- import Html exposing (..)
 import Html.Events exposing (onInput)
+import Html exposing (Html, text, label, input)
+import Material.Options as Options
+import Material.Options exposing (div, css)
+import Material.Elevation as Elevation
+import Material.Icon as Icon
+
+import Style
+import Uuid
 
 type MetricType = MString | MRating | MNumber | MBoolean
 
-type alias Model =
-  { name : String
+type alias Metric =
+  { id : Int
+  , name : String
   , metricType : MetricType
   }
 
 
-init : String -> MetricType -> Model
-init name type' =
-  Model name type'
+newMetric : Int -> String -> Maybe MetricType -> Metric
+newMetric id name type' =
+    Metric id name (Maybe.withDefault MString type')
 
 
-type Msg = SetName String
+type Msg
+  = SetNameField String
 
 
-update : Msg -> Model -> Model
+update : Msg -> Metric -> Metric
 update msg model =
   case msg of
-    SetName newName ->
-      { model | name = newName }
+    SetNameField newValue ->
+      { model | name = newValue }
 
 
-editView : Model -> Html Msg
+view : Metric -> Html Msg
+view model =
+  div Style.card
+    [ text model.name
+    , metricTypeIcons model
+    ]
+
+metricTypeIcons : Metric -> Html Msg
+metricTypeIcons model =
+  div [ css "float" "right" ]
+    (List.map (iconForType model) [MString, MNumber, MRating, MBoolean])
+
+
+editView : Metric -> Html Msg
 editView model =
   div []
     [ label [] [ text "Metric Name" ]
-    , input [ onInput SetName ] []
+    , input [ onInput SetNameField ] []
     ]
 
-typeToString : MetricType -> String
-typeToString type' =
-  case type' of
-    MString ->
-      "text"
+iconForType : Metric -> MetricType -> Html m
+iconForType metric type' =
+  let
+    iconDiv =
+      if metric.metricType == type' then
+        div [ css "float" "right" ]
+      else
+        div [ css "float" "right", css "color" "#c0c0c0" ]
+  in
+    case type' of
+      MString ->
+        iconDiv [ Icon.i "text_format" ]
 
-    MRating ->
-      "rating"
+      MNumber ->
+        iconDiv [ Icon.i "looks_6" ]
 
-    MNumber ->
-      "number"
+      MBoolean ->
+        iconDiv [ Icon.i "check_circle" ]
 
-    MBoolean ->
-      "checkbox"
+      MRating ->
+        iconDiv [ Icon.i "stars" ]
 
 {--
 view : (Msg -> m) -> Model -> Html m

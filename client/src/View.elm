@@ -8,6 +8,7 @@ import Material.Layout as Layout
 import Material.Scheme as Scheme
 import Material.Color as Color
 import Material.Icon as Icon
+import Material.Grid exposing (grid, cell, size, Device(..))
 
 import Model exposing (..)
 import Route exposing (..)
@@ -28,6 +29,16 @@ header =
       ]
   ]
 
+drawerView : Model.Model -> Html Msg
+drawerView model =
+  Layout.navigation []
+    [ div []
+        [ text "Metrics"
+        , Icon.i "add"
+        ]
+    , div [] [ text "Contents" ]
+    ]
+
 layoutView : Model.Model -> Html Msg
 layoutView model =
   Layout.render Mdl model.mdl
@@ -37,7 +48,7 @@ layoutView model =
     ]
     { header = header
     , main = [ div [] [ pageView model ] ]
-    , drawer = [ Layout.navigation [] [] ]
+    , drawer = [ drawerView model ]
     , tabs = ( [], [] )
     }
   |> (\contents ->
@@ -91,13 +102,24 @@ pageView : Model.Model -> Html Msg
 pageView model =
   case model.route of
     IndexRoute ->
-      text "You are on the index page."
+      let
+        metrics =
+          List.map viewMetrics model.metrics
+      in
+        grid [] metrics
 
     MetricsRoute ->
       text "You are on the metrics page."
 
     NotFoundRoute ->
       text "Oops! Page not found."
+
+
+viewMetrics metric =
+  cell [ size All 4 ]
+    [ App.map (MetricMsg metric.id) (Metric.view metric) ]
+
+
 --
 -- metricRow : IndexedMetric -> Html Msg
 -- metricRow model =
