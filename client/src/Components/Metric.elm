@@ -33,6 +33,7 @@ newMetric id name type' =
 type Msg
   = SetName String
   | SetType MetricType
+  | ToggleEditing
   | Mdl Material.Msg
 
 
@@ -44,6 +45,9 @@ update msg model =
 
     SetType newType ->
       ({ model | metricType = newType }, Cmd.none)
+
+    ToggleEditing ->
+      ({model | isEditing = not model.isEditing}, Cmd.none)
 
     Mdl msg' ->
       Material.update Mdl msg' model
@@ -68,7 +72,7 @@ view model =
 
 metricTypeIcons : Metric -> Html Msg
 metricTypeIcons model =
-  div [ css "float" "right", css "margin-top" "20px" ]
+  div [ css "float" "right", css "margin-top" (if model.isEditing then "20px" else "0px") ]
     (List.indexedMap (iconForType model) [MString, MNumber, MRating, MBoolean])
 
 
@@ -78,7 +82,14 @@ editView model =
     [ Textfield.label "Metric name"
     , Textfield.floatingLabel
     , Textfield.onInput SetName
-    , css "width" "150px" ]
+    , css "width" "150px"
+    ]
+  , Button.render Mdl [4] model.mdl
+    [ css "float" "right"
+    , css "margin-top" "20px"
+    , css "color" "#00ff00"
+    , Button.onClick ToggleEditing
+    ] [ Icon.i "done" ]
   , metricTypeIcons model
   ]
 
@@ -92,14 +103,14 @@ iconForType metric idx type' =
       , Button.onClick (SetType type')
       ]
 
-    btn =
-      Button.render Mdl [idx] metric.mdl
+    iconEl =
+      if metric.isEditing then Button.render Mdl [idx] metric.mdl else div
 
     iconDiv =
       if metric.metricType == type' then
-        btn baseStyle
+        iconEl baseStyle
       else
-        btn ((css "color" "#c0c0c0") :: baseStyle)
+        iconEl ((css "color" "#c0c0c0") :: baseStyle)
   in
     case type' of
       MString ->

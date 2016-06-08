@@ -103,20 +103,20 @@ pageView : Model.Model -> Html Msg
 pageView model =
   case model.route of
     IndexRoute ->
-      let
-        metrics =
-          List.map (viewMetrics model.mdl) model.metrics
-      in
-        grid [] metrics
+      text "You are on the index page."
 
     MetricsRoute ->
-      text "You are on the metrics page."
+      let
+      metrics =
+        List.map viewMetrics model.metrics
+        in
+        grid [] metrics
 
     NotFoundRoute ->
       text "Oops! Page not found."
 
-
-viewMetrics mdl metric =
+viewMetrics : Metric.Metric -> Material.Grid.Cell Msg
+viewMetrics metric =
   cell [ size All 4 ]
     [ App.map (MetricMsg metric.id) (Metric.view metric) ]
 
