@@ -1,9 +1,12 @@
 module Update exposing (..)
 
+import String
 import Hop exposing (makeUrl)
 import Hop.Types exposing (Location)
 import Navigation
 import Material
+import Random.Pcg exposing (step)
+import Uuid
 
 import Route exposing (routerConfig)
 import Model exposing (..)
@@ -20,8 +23,24 @@ urlUpdate ( route, location ) model =
 update : Msg -> Model.Model -> (Model.Model, Cmd Msg)
 update msg model =
   case msg of
+    AddMetric ->
+      let
+        (uuid, newSeed) =
+          step Uuid.uuidGenerator model.currentSeed
+      in
+        ( { model
+          | metrics = model.metrics ++ [Metric.newMetric uuid "" Nothing]
+          , currentSeed = newSeed
+          }
+        , Cmd.none
+        )
+
     MetricMsg id msg' ->
-      ( model, Cmd.none )
+      let
+        updateMetric m =
+          if m.id == id then (Metric.update msg' m) |> fst else m
+      in
+        ({model | metrics = List.map updateMetric model.metrics }, Cmd.none)
 
     NavigateTo path ->
       let

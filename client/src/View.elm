@@ -8,6 +8,7 @@ import Material.Layout as Layout
 import Material.Scheme as Scheme
 import Material.Color as Color
 import Material.Icon as Icon
+import Material.Button as Button
 import Material.Grid exposing (grid, cell, size, Device(..))
 
 import Model exposing (..)
@@ -15,14 +16,14 @@ import Route exposing (..)
 
 import Components.Metric as Metric
 
-header : List (Html a)
-header =
+header : Model.Model -> List (Html Msg)
+header model =
   [ Layout.row
       []
       [ Layout.title [] [ text "LifeTrak" ]
       , Layout.spacer
       , Layout.navigation []
-        [ Icon.i "add"
+        [ Button.render Mdl [0] model.mdl [ Button.onClick AddMetric ] [ Icon.i "add" ]
         , Layout.spacer
         , Icon.i "settings"
         ]
@@ -46,7 +47,7 @@ layoutView model =
     -- , Layout.fixedDrawer
     , Layout.waterfall True
     ]
-    { header = header
+    { header = (header model)
     , main = [ div [] [ pageView model ] ]
     , drawer = [ drawerView model ]
     , tabs = ( [], [] )
@@ -104,7 +105,7 @@ pageView model =
     IndexRoute ->
       let
         metrics =
-          List.map viewMetrics model.metrics
+          List.map (viewMetrics model.mdl) model.metrics
       in
         grid [] metrics
 
@@ -115,7 +116,7 @@ pageView model =
       text "Oops! Page not found."
 
 
-viewMetrics metric =
+viewMetrics mdl metric =
   cell [ size All 4 ]
     [ App.map (MetricMsg metric.id) (Metric.view metric) ]
 

@@ -1,9 +1,11 @@
 module Model exposing (..)
 
+import Uuid
 import Hop.Types exposing (Location)
-import Route exposing (Route)
+import Random.Pcg exposing (Seed)
 import Material
 
+import Route exposing (Route)
 import Components.Metric as Metric
 
 type alias Model =
@@ -12,9 +14,11 @@ type alias Model =
   , route : Route
   , location : Location
   , mdl : Material.Model
+  , currentSeed : Seed
   }
 
 type Msg
-  = MetricMsg Int Metric.Msg
+  = MetricMsg Uuid.Uuid Metric.Msg
+  | AddMetric
   | NavigateTo String
   | Mdl Material.Msg
